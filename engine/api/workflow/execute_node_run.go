@@ -514,6 +514,7 @@ jobLoop:
 		}
 
 		// add requirements in job parameters, to use them as {{.job.requirement...}} in job
+		// TODO compute job context
 		_, next = telemetry.Span(ctx, "workflow.prepareRequirementsToNodeJobRunParameters")
 		jobParams = append(jobParams, prepareRequirementsToNodeJobRunParameters(jobRequirements)...)
 		next()
@@ -802,7 +803,7 @@ func NodeBuildParametersFromWorkflow(proj sdk.Project, wf *sdk.Workflow, refNode
 		runContext.NodeGroups = refNode.Groups
 
 		var err error
-		res, err = getBuildParameterFromNodeContext(proj, *wf, runContext, refNode.Context.DefaultPipelineParameters, refNode.Context.DefaultPayload, nil)
+		res, _, err = getBuildParameterFromNodeContext(proj, *wf, runContext, refNode.Context.DefaultPipelineParameters, refNode.Context.DefaultPayload, nil)
 		if err != nil {
 			return nil, sdk.WrapError(sdk.ErrWorkflowNodeNotFound, "getWorkflowTriggerConditionHandler> Unable to get workflow node parameters: %v", err)
 		}
