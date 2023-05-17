@@ -38,7 +38,7 @@ func setValuesGitInBuildParameters(run *sdk.WorkflowNodeRun, runContext nodeRunC
 	sdk.ParameterAddOrSetValue(&run.BuildParameters, tagGitHTTPURL, sdk.StringParameter, vcsInfos.HTTPUrl)
 	sdk.ParameterAddOrSetValue(&run.BuildParameters, tagGitServer, sdk.StringParameter, vcsInfos.Server)
 
-	gitContext := &sdk.GitContext{
+	gitContext := sdk.GitContext{
 		Hash:       vcsInfos.Hash,
 		Repository: vcsInfos.Repository,
 		Branch:     vcsInfos.Branch,
@@ -61,7 +61,7 @@ func setValuesGitInBuildParameters(run *sdk.WorkflowNodeRun, runContext nodeRunC
 			}
 		}
 	}
-	run.Contexts["git"] = gitContext
+	run.Contexts.Git = gitContext
 }
 
 func checkCondition(ctx context.Context, wr *sdk.WorkflowRun, conditions sdk.WorkflowNodeConditions, params []sdk.Parameter) bool {

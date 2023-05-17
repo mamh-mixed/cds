@@ -1,8 +1,53 @@
 package sdk
 
-// Context available on ascode action
-// "cds": CDSContext - information about workflow instantiation
-// "git": GitContext - information about the repository used in a job
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
+)
+
+type NodeRunContext struct {
+	CDS  CDSContext        `json:"cds,omitempty"`
+	Git  GitContext        `json:"git,omitempty"`
+	Vars map[string]string `json:"vars,omitempty"`
+}
+
+func (m NodeRunContext) Value() (driver.Value, error) {
+	j, err := json.Marshal(m)
+	return j, WrapError(err, "cannot marshal NodeRunContext")
+}
+
+func (m *NodeRunContext) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
+	source, ok := src.([]byte)
+	if !ok {
+		return WithStack(fmt.Errorf("type assertion .([]byte) failed (%T)", src))
+	}
+	return WrapError(JSONUnmarshal(source, m), "cannot unmarshal NodeRunContext")
+}
+
+type JobRunContext struct {
+	NodeRunContext
+	Job JobContext `json:"job,omitempty"`
+}
+
+func (m JobRunContext) Value() (driver.Value, error) {
+	j, err := json.Marshal(m)
+	return j, WrapError(err, "cannot marshal JobRunContext")
+}
+
+func (m *JobRunContext) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
+	source, ok := src.([]byte)
+	if !ok {
+		return WithStack(fmt.Errorf("type assertion .([]byte) failed (%T)", src))
+	}
+	return WrapError(JSONUnmarshal(source, m), "cannot unmarshal JobRunContext")
+}
 
 type CDSContext struct {
 	// Workflow
@@ -15,9 +60,13 @@ type CDSContext struct {
 	WorkflowSha     string                 `json:"workflow_sha,omitempty"`
 	TriggeringActor string                 `json:"triggering_actor,omitempty"`
 	// Job
-	Job string `json:"triggering_actor,omitempty"`
+	Job   string `json:"job,omitempty"`
+	Stage string `json:"stage,omitempty"`
 	// Worker
-	Workspace string `json:"workspace,omitempty"`
+	Workspace         string `json:"workspace,omitempty"`
+	ActionRef         string `json:"action_ref,omitempty"`
+	ActionRespository string `json:"action_repository,omitempty"`
+	ActionStatus      string `json:"action_status,omitempty"`
 }
 
 type GitContext struct {
@@ -35,4 +84,17 @@ type GitContext struct {
 	SSHKey     string `json:"ssh_key,omitempty"`
 	PGPKey     string `json:"pgp_key,omitempty"`
 	HttpUser   string `json:"http_user,omitempty"`
+}
+
+type JobContext struct {
+	// Update by worker
+	Status string `json:"status"`
+
+	// Set by hatchery
+	Services map[string]JobContextService `json:"services"`
+}
+
+type JobContextService struct {
+	ID   string            `json:"id"`
+	Port map[string]string `json:"ports"`
 }

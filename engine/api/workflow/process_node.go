@@ -522,8 +522,8 @@ func computeNodeContextBuildParameters(ctx context.Context, proj sdk.Project, wr
 	}
 	run.BuildParameters = append(run.BuildParameters, nodeRunParams...)
 
-	allContexts["vars"] = varsContext
-	allContexts["cds"] = computeCDSContext(ctx, *wr, *run)
+	allContexts.Vars = varsContext
+	allContexts.CDS = computeCDSContext(ctx, *wr, *run)
 	run.Contexts = allContexts
 }
 

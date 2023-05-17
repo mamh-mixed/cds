@@ -399,8 +399,6 @@ type WorkflowNodeRun struct {
 	VCSReport              string                               `json:"vcs_report,omitempty"`
 }
 
-type NodeRunContext map[string]interface{}
-
 func (nodeRun *WorkflowNodeRun) GetStageIndex(job *WorkflowNodeJobRun) int {
 	var stageIndex = -1
 	for i := range nodeRun.Stages {
@@ -502,6 +500,7 @@ type WorkflowNodeJobRun struct {
 	HatcheryName       string             `json:"hatchery_name,omitempty"`
 	WorkerName         string             `json:"worker_name,omitempty"`
 	IntegrationPlugins []GRPCPlugin       `json:"integration_plugin,omitempty"`
+	Contexts           JobRunContext      `json:"contexts,omitempty"`
 }
 
 type BookedBy struct {
@@ -622,20 +621,4 @@ func (q WorkflowQueue) Sort() {
 		return p1 < p2
 	})
 
-}
-
-func (m NodeRunContext) Value() (driver.Value, error) {
-	j, err := json.Marshal(m)
-	return j, WrapError(err, "cannot marshal NodeRunContext")
-}
-
-func (m *NodeRunContext) Scan(src interface{}) error {
-	if src == nil {
-		return nil
-	}
-	source, ok := src.([]byte)
-	if !ok {
-		return WithStack(fmt.Errorf("type assertion .([]byte) failed (%T)", src))
-	}
-	return WrapError(JSONUnmarshal(source, m), "cannot unmarshal NodeRunContext")
 }

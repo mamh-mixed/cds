@@ -325,8 +325,8 @@ func getNodeRunBuildParameters(ctx context.Context, proj sdk.Project, wr *sdk.Wo
 	return params, varsContext, errm
 }
 
-func computeCDSContext(ctx context.Context, wr sdk.WorkflowRun, wnr sdk.WorkflowNodeRun) *sdk.CDSContext {
-	cdsCtx := &sdk.CDSContext{}
+func computeCDSContext(ctx context.Context, wr sdk.WorkflowRun, wnr sdk.WorkflowNodeRun) sdk.CDSContext {
+	cdsCtx := sdk.CDSContext{}
 
 	cdsCtx.RunID = fmt.Sprintf("%d", wr.ID)
 	cdsCtx.RunNumber = fmt.Sprintf("%d", wr.Number)
