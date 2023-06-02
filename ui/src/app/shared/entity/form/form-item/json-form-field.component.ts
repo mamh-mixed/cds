@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { FlatElementTypeCondition } from "../../../../model/schema.model";
 import { JSONFormSchema, JSONFormSchemaOneOfItem } from "../json-form.component";
-import { EntityAction } from "../../../../model/project.model";
 import { ProjectService } from "../../../../service/project/project.service";
 import { ActivatedRoute } from "@angular/router";
 import { ProjectState } from "../../../../store/project.state";
@@ -9,6 +8,7 @@ import { Store } from "@ngxs/store";
 import { load, LoadOptions } from 'js-yaml'
 import { PluginService } from "../../../../service/plugin.service";
 import { DragulaService } from "ng2-dragula-sgu";
+import {EntityAction} from "../../../../model/entity.model";
 
 export class FormItem {
     name: string;
