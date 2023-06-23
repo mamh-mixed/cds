@@ -108,6 +108,8 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 			Job:           jobDef,
 			UserID:        wrEnqueue.UserID,
 			Username:      u.Username,
+			Header:        run.Header,
+
 		}
 		if err := workflow_v2.InsertRunJob(ctx, tx, &runJob); err != nil {
 			return err

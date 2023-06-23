@@ -60,6 +60,15 @@ func LoadRunByID(ctx context.Context, db gorp.SqlExecutor, id string) (*sdk.V2Wo
 	return getRun(ctx, db, query)
 }
 
+func LoadRunByRunNumber(ctx context.Context, db gorp.SqlExecutor, projectKey, vcsServerID, repositoryID, wfName string, runNumber int64) (*sdk.V2WorkflowRun, error) {
+	query := gorpmapping.NewQuery(`
+    SELECT * from v2_workflow_run
+    WHERE project_key = $1 AND vcs_server_id = $2
+    AND repository_id = $3 AND workflow_name = $4 AND run_number = $5`).
+		Args(projectKey, vcsServerID, repositoryID, wfName, runNumber)
+	return getRun(ctx, db, query)
+}
+
 func LoadCratingWorkflowRunIDs(db gorp.SqlExecutor) ([]string, error) {
 	query := `
 		SELECT id
@@ -68,7 +77,7 @@ func LoadCratingWorkflowRunIDs(db gorp.SqlExecutor) ([]string, error) {
 		LIMIT 10
 	`
 	var ids []string
-	_, err := db.Select(&ids, query, sdk.StatusWorkflowRunCrafting)
+	_, err := db.Select(&ids, query, sdk.StatusCrafting)
 	if err != nil {
 		return nil, sdk.WrapError(err, "unable to load crafting v2 workflow runs")
 	}

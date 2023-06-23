@@ -11,6 +11,7 @@ import (
 )
 
 const DefaultPubSubKey = "events_pubsub"
+const JobQueuedPubSubKey = "jobs:queued"
 
 var pubSubKey = DefaultPubSubKey
 

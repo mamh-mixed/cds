@@ -2,8 +2,11 @@ package api
 
 import (
 	"context"
+	"fmt"
+
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -14,8 +17,48 @@ import (
 	"github.com/ovh/cds/engine/api/workflow_v2"
 	"github.com/ovh/cds/engine/service"
 	"github.com/ovh/cds/sdk"
+	"github.com/ovh/cds/sdk/telemetry"
 	"github.com/rockbears/yaml"
 )
+
+func (api *API) getWorkflowRunV2Handler() ([]service.RbacChecker, service.Handler) {
+	return service.RBAC(api.projectRead),
+		func(ctx context.Context, w http.ResponseWriter, req *http.Request) error {
+			vars := mux.Vars(req)
+			pKey := vars["projectKey"]
+			vcsIdentifier, err := url.PathUnescape(vars["vcsIdentifier"])
+			if err != nil {
+				return sdk.NewError(sdk.ErrWrongRequest, err)
+			}
+			repositoryIdentifier, err := url.PathUnescape(vars["repositoryIdentifier"])
+			if err != nil {
+				return sdk.WithStack(err)
+			}
+			workflowName := vars["workflowName"]
+			runNumber := service.FormInt64(req, "number")
+
+			proj, err := project.Load(ctx, api.mustDB(), pKey)
+			if err != nil {
+				return err
+			}
+
+			vcsProject, err := api.getVCSByIdentifier(ctx, proj.Key, vcsIdentifier)
+			if err != nil {
+				return err
+			}
+
+			repo, err := api.getRepositoryByIdentifier(ctx, vcsProject.ID, repositoryIdentifier)
+			if err != nil {
+				return err
+			}
+
+			wr, err := workflow_v2.LoadRunByRunNumber(ctx, api.mustDB(), proj.Key, vcsProject.ID, repo.ID, workflowName, runNumber)
+			if err != nil {
+				return err
+			}
+			return service.WriteJSON(w, wr, http.StatusOK)
+		}
+}
 
 func (api *API) postWorkflowRunV2Handler() ([]service.RbacChecker, service.Handler) {
 	return service.RBAC(api.workflowExecute),
@@ -94,7 +137,7 @@ func (api *API) postWorkflowRunV2Handler() ([]service.RbacChecker, service.Handl
 				WorkflowName: wk.Name,
 				WorkflowRef:  workflowEntity.Branch,
 				WorkflowSha:  workflowEntity.Commit,
-				Status:       sdk.StatusWorkflowRunCrafting,
+				Status:       sdk.StatusCrafting,
 				RunNumber:    wrNumber,
 				RunAttempt:   0,
 				Started:      time.Now(),
@@ -104,6 +147,18 @@ func (api *API) postWorkflowRunV2Handler() ([]service.RbacChecker, service.Handl
 				UserID:       u.AuthConsumerUser.AuthentifiedUserID,
 				Username:     u.AuthConsumerUser.AuthentifiedUser.Username,
 				Event:        sdk.V2WorkflowRunEvent{},
+			}
+
+			if wr.Header == nil {
+				wr.Header = sdk.WorkflowRunHeaders{}
+			}
+			wr.Header.Set(sdk.WorkflowRunHeader, strconv.FormatInt(wr.RunNumber, 10))
+			wr.Header.Set(sdk.WorkflowHeader, wr.WorkflowName)
+			wr.Header.Set(sdk.ProjectKeyHeader, proj.Key)
+
+			if telemetry.Current(ctx).SpanContext().IsSampled() {
+				wr.Header.Set(telemetry.SampledHeader, "1")
+				wr.Header.Set(telemetry.TraceIDHeader, fmt.Sprintf("%v", telemetry.Current(ctx).SpanContext().TraceID))
 			}
 
 			tx, err := api.mustDB().Begin()

@@ -28,6 +28,7 @@ type V2WorkflowRun struct {
 	Username     string             `json:"username" db:"username"`
 	Contexts     WorkflowRunContext `json:"contexts" db:"contexts"`
 	Event        V2WorkflowRunEvent `json:"event" db:"event"`
+	Header       WorkflowRunHeaders `json:"header,omitempty" db:"header"`
 }
 
 type WorkflowRunContext struct {
@@ -123,20 +124,24 @@ type WebHookTrigger struct {
 }
 
 type V2WorkflowRunJob struct {
-	ID            string          `json:"id" db:"id"`
-	WorkflowRunID string          `json:"workflow_run_id" db:"workflow_run_id"`
-	Status        string          `json:"status" db:"status"`
-	Queued        time.Time       `json:"queued" db:"queued"`
-	Started       time.Time       `json:"started" db:"started"`
-	Ended         time.Time       `json:"ended" db:"ended"`
-	JobID         string          `json:"job_id" db:"job_id"`
-	Job           V2Job           `json:"job" db:"job"`
-	WorkerID      string          `json:"worker_id,omitempty" db:"worker_id"`
-	WorkerName    string          `json:"worker_name" db:"worker_name"`
-	HatcheryName  string          `json:"hatchery_name" db:"hatchery_name"`
-	Outputs       JobResultOutput `json:"outputs" db:"outputs"`
-	UserID        string          `json:"user_id" db:"user_id"`
-	Username      string          `json:"username" db:"username"`
+	ID            string             `json:"id" db:"id"`
+	WorkflowRunID string             `json:"workflow_run_id" db:"workflow_run_id"`
+	ProjectKey    string             `json:"project_key" db:"project_key"`
+	Status        string             `json:"status" db:"status"`
+	Queued        time.Time          `json:"queued" db:"queued"`
+	Started       time.Time          `json:"started" db:"started"`
+	Ended         time.Time          `json:"ended" db:"ended"`
+	JobID         string             `json:"job_id" db:"job_id"`
+	Job           V2Job              `json:"job" db:"job"`
+	WorkerID      string             `json:"worker_id,omitempty" db:"worker_id"`
+	WorkerName    string             `json:"worker_name" db:"worker_name"`
+	HatcheryName  string             `json:"hatchery_name" db:"hatchery_name"`
+	Outputs       JobResultOutput    `json:"outputs" db:"outputs"`
+	UserID        string             `json:"user_id" db:"user_id"`
+	Username      string             `json:"username" db:"username"`
+	Header        WorkflowRunHeaders `json:"header,omitempty" db:"header"`
+	Region        string             `json:"region,omitempty" db:"region"`
+	ModelType     string             `json:"model_type,omitempty" db:"model_type"`
 }
 
 type V2WorkflowRunEnqueue struct {
@@ -153,8 +158,22 @@ type V2WorkflowRunInfo struct {
 	Message       string    `json:"message" db:"message"`
 }
 
+type V2WorkflowRunJobInfo struct {
+	ID               string    `json:"id" db:"id"`
+	WorkflowRunID    string    `json:"workflow_run_id" db:"workflow_run_id"`
+	WorkflowRunJobID string    `json:"workflow_run_job_id" db:"workflow_run_job_id"`
+	IssuedAt         time.Time `json:"issued_at" db:"issued_at"`
+	Level            string    `json:"level" db:"level"`
+	Message          string    `json:"message" db:"message"`
+}
+
 const (
 	WorkflowRunInfoLevelInfo    = "info"
 	WorkflowRunInfoLevelWarning = "warning"
 	WorkflowRunInfoLevelError   = "error"
 )
+
+type V2WorkflowRunJobResult struct {
+	Status string `json:"status"`
+	Error  string `json:"error,omitempty"`
+}
