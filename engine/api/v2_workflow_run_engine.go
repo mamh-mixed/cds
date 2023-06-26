@@ -11,6 +11,7 @@ import (
 	"github.com/go-gorp/gorp"
 	"github.com/rockbears/log"
 
+	"github.com/ovh/cds/engine/api/event"
 	"github.com/ovh/cds/engine/api/rbac"
 	"github.com/ovh/cds/engine/api/region"
 	"github.com/ovh/cds/engine/api/user"
@@ -128,6 +129,8 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 	}
 
 	// Enqueue JOB
+
+	runJobs := make([]sdk.V2WorkflowRunJob, 0, len(jobsToQueue))
 	for jobID, jobDef := range jobsToQueue {
 		runJob := sdk.V2WorkflowRunJob{
 			WorkflowRunID: run.ID,
@@ -136,10 +139,17 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 			Job:           jobDef,
 			UserID:        wrEnqueue.UserID,
 			Username:      u.Username,
+			Header:        run.Header,
+			ProjectKey:    run.ProjectKey,
+			Region:        jobDef.Region,
+		}
+		if jobDef.WorkerModel != "" {
+			runJob.ModelType = run.WorkflowData.WorkerModels[jobDef.WorkerModel].Type
 		}
 		if err := workflow_v2.InsertRunJob(ctx, tx, &runJob); err != nil {
 			return err
 		}
+		runJobs = append(runJobs, runJob)
 	}
 
 	// Save Run message
@@ -155,6 +165,19 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 
 		if err := workflow_v2.UpdateRun(ctx, tx, run); err != nil {
 			return err
+		}
+	}
+
+	// Send to websocket
+	for _, rj := range runJobs {
+		runJobEvent := sdk.WebsocketJobQueueEvent{
+			Region:    rj.Region,
+			ModelType: rj.ModelType,
+			JobRunID:  rj.ID,
+		}
+		bts, _ := json.Marshal(runJobEvent)
+		if err := api.Cache.Publish(ctx, event.JobQueuedPubSubKey, string(bts)); err != nil {
+			log.Error(ctx, "%v", err)
 		}
 	}
 
@@ -186,6 +209,12 @@ func retrieveJobToQueue(ctx context.Context, db *gorp.DbMap, run *sdk.V2Workflow
 		return nil, runInfos, "", nil
 	}
 
+	// all current runJobs Status
+	allrunJobsMap := make(map[string]sdk.V2WorkflowRunJob)
+	for _, rj := range runJobs {
+		allrunJobsMap[rj.JobID] = rj
+	}
+
 	// Compute run context
 	jobsContext := buildJobsContext(runJobs)
 
@@ -193,7 +222,10 @@ func retrieveJobToQueue(ctx context.Context, db *gorp.DbMap, run *sdk.V2Workflow
 	jobsToCheck := make(map[string]sdk.V2Job)
 	if len(wrEnqueue.Jobs) == 0 {
 		for jobID, jobDef := range run.WorkflowData.Workflow.Jobs {
-			jobsToCheck[jobID] = jobDef
+			// Do not enqueue jobs that have already a run
+			if _, has := allrunJobsMap[jobID]; !has {
+				jobsToCheck[jobID] = jobDef
+			}
 		}
 	} else {
 		for _, jobID := range wrEnqueue.Jobs {
@@ -226,8 +258,9 @@ func retrieveJobToQueue(ctx context.Context, db *gorp.DbMap, run *sdk.V2Workflow
 			continue
 		}
 
+		// Check user right
 		_, next = telemetry.Span(ctx, "retrieveJobToQueue.checkUserRight")
-		hasRight, err := checkUserRight(ctx, db, jobDef, *u, defaultRegion)
+		hasRight, err := checkUserRight(ctx, db, &jobDef, *u, defaultRegion)
 		if err != nil {
 			next()
 			runInfos = append(runInfos, sdk.V2WorkflowRunInfo{
@@ -247,6 +280,7 @@ func retrieveJobToQueue(ctx context.Context, db *gorp.DbMap, run *sdk.V2Workflow
 			continue
 		}
 
+		// Check job condition
 		_, next = telemetry.Span(ctx, "retrieveJobToQueue.checkJobCondition")
 		canRun, err := checkJobCondition(ctx, jobID, run.Contexts, jobsContext, jobDef)
 		if err != nil {
@@ -267,6 +301,7 @@ func retrieveJobToQueue(ctx context.Context, db *gorp.DbMap, run *sdk.V2Workflow
 			})
 			continue
 		}
+
 		if canRun {
 			jobToQueue[jobID] = jobDef
 		}
@@ -289,7 +324,7 @@ func computeJobRunStatus(runJobs []sdk.V2WorkflowRunJob) string {
 	return finalStatus
 }
 
-func checkUserRight(ctx context.Context, db gorp.SqlExecutor, jobDef sdk.V2Job, u sdk.AuthentifiedUser, defaultRegion string) (bool, error) {
+func checkUserRight(ctx context.Context, db gorp.SqlExecutor, jobDef *sdk.V2Job, u sdk.AuthentifiedUser, defaultRegion string) (bool, error) {
 	if jobDef.Region == "" {
 		jobDef.Region = defaultRegion
 	}

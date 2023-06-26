@@ -274,7 +274,7 @@ func (api *API) craftWorkflowRunV2(ctx context.Context, id string) error {
 	}
 	next()
 
-	if run.Status != sdk.StatusWorkflowRunCrafting {
+	if run.Status != sdk.StatusCrafting {
 		return nil
 	}
 
