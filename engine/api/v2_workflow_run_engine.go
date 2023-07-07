@@ -150,6 +150,7 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 			RunNumber:     run.RunNumber,
 			RunAttempt:    0, // TODO manage rerun
 		}
+
 		if jobDef.WorkerModel != "" {
 			runJob.ModelType = run.WorkflowData.WorkerModels[jobDef.WorkerModel].Type
 		}
@@ -174,6 +175,9 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 			return err
 		}
 	}
+	if err := tx.Commit(); err != nil {
+		return sdk.WithStack(err)
+	}
 
 	// Send to websocket
 	for _, rj := range runJobs {
@@ -192,7 +196,7 @@ func (api *API) workflowRunV2Trigger(ctx context.Context, wrEnqueue sdk.V2Workfl
 		}
 	}
 
-	return sdk.WithStack(tx.Commit())
+	return nil
 }
 
 // TODO manage re run

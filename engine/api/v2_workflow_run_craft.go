@@ -175,7 +175,7 @@ func (api *API) craftWorkflowRunV2(ctx context.Context, id string) error {
 		if msg != nil {
 			return stopRun(ctx, api.mustDB(), run, msg)
 		}
-
+		run.WorkflowData.Workflow.Jobs[jobID] = j
 	}
 
 	for k, v := range wref.actionsCache {
@@ -198,6 +198,10 @@ func (api *API) craftWorkflowRunV2(ctx context.Context, id string) error {
 		return err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return sdk.WithStack(err)
+	}
+
 	enqueueRequest := sdk.V2WorkflowRunEnqueue{
 		RunID:  run.ID,
 		UserID: run.UserID,
@@ -211,7 +215,7 @@ func (api *API) craftWorkflowRunV2(ctx context.Context, id string) error {
 			return err
 		}
 	}
-	return sdk.WithStack(tx.Commit())
+	return nil
 }
 
 // Return the complete path of the entity
