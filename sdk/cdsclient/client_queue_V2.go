@@ -9,6 +9,14 @@ import (
 	"github.com/ovh/cds/sdk"
 )
 
+func (c *client) V2QueuePushJobInfo(ctx context.Context, regionName string, jobRunID string, msg sdk.V2SendJobRunInfo) error {
+	path := fmt.Sprintf("/v2/queue/%s/job/%s/info", regionName, jobRunID)
+	if _, err := c.PostJSON(ctx, path, msg, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *client) V2QueueJobResult(ctx context.Context, regionName string, jobRunID string, result sdk.V2WorkflowRunJobResult) error {
 	path := fmt.Sprintf("/v2/queue/%s/job/%s/result", regionName, jobRunID)
 	if _, err := c.PostJSON(ctx, path, result, nil); err != nil {
@@ -18,13 +26,21 @@ func (c *client) V2QueueJobResult(ctx context.Context, regionName string, jobRun
 }
 
 // V2HatcheryTakeJob job status pssed to crafting and other hatcheries cannot work on it
-func (c *client) V2HatcheryTakeJob(ctx context.Context, jobRunID string) (*sdk.V2WorkflowRunJob, error) {
-	path := fmt.Sprintf("/v2/queue/job/%s/hatchery/take", jobRunID)
+func (c *client) V2HatcheryTakeJob(ctx context.Context, regionName string, jobRunID string) (*sdk.V2WorkflowRunJob, error) {
+	path := fmt.Sprintf("/v2/queue/%s/job/%s/hatchery/take", regionName, jobRunID)
 	var jobRun sdk.V2WorkflowRunJob
 	if _, err := c.PostJSON(ctx, path, nil, &jobRun); err != nil {
 		return nil, err
 	}
 	return &jobRun, nil
+}
+
+func (c *client) V2HatcheryReleaseJob(ctx context.Context, regionName string, jobRunID string) error {
+	path := fmt.Sprintf("/v2/queue/%s/job/%s/hatchery/take", regionName, jobRunID)
+	if _, err := c.DeleteJSON(ctx, path, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 // V2QueueGetJobRun returns information about a job

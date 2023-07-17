@@ -16,7 +16,7 @@ import (
 func StartWorker(ctx context.Context, w *CurrentWorker, bookedJobID string) (mainError error) {
 	ctx = context.WithValue(ctx, log.Field("permJobID"), bookedJobID)
 
-	log.Info(ctx, "Starting worker %s on job %d", w.Name(), bookedJobID)
+	log.Info(ctx, "Starting worker %s on job %s", w.Name(), bookedJobID)
 
 	if bookedJobID == "0" {
 		return errors.Errorf("startWorker: bookedJobID is mandatory. val: %s", bookedJobID)
