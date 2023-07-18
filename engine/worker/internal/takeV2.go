@@ -19,7 +19,7 @@ import (
 func (w *CurrentWorker) V2Take(ctx context.Context, region, jobRunID string) error {
 	info, err := w.clientV2.V2QueueWorkerTakeJob(ctx, region, jobRunID)
 	if err != nil {
-		return sdk.WrapError(err, "Unable to take job %d", jobRunID)
+		return sdk.WrapError(err, "Unable to take job %s", jobRunID)
 	}
 
 	log.Info(ctx, "takeWorkflowJob> Job %s taken", jobRunID)
