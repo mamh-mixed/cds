@@ -54,6 +54,7 @@ func (b *bitbucketClient) Branches(ctx context.Context, fullname string, filters
 		}
 	}
 
+	hasDefaultBranch := false
 	for _, sb := range stashBranches {
 		b := sdk.VCSBranch{
 			ID:           sb.ID,
@@ -61,7 +62,18 @@ func (b *bitbucketClient) Branches(ctx context.Context, fullname string, filters
 			LatestCommit: sb.LatestHash,
 			Default:      sb.IsDefault,
 		}
+		if b.Default {
+			hasDefaultBranch = true
+		}
 		branches = append(branches, b)
+	}
+
+	if !hasDefaultBranch {
+		defaultBranch, err := b.Branch(ctx, fullname, sdk.VCSBranchFilters{Default: true})
+		if err != nil {
+			return nil, err
+		}
+		branches = append(branches, *defaultBranch)
 	}
 
 	return branches, nil

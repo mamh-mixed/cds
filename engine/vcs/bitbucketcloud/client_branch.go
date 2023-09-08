@@ -53,6 +53,7 @@ func (client *bitbucketcloudClient) Branches(ctx context.Context, fullname strin
 		}
 	}
 
+	hasDefaultBranch := false
 	branchesResult := make([]sdk.VCSBranch, 0, len(branches))
 	for _, b := range branches {
 		branch := sdk.VCSBranch{
@@ -64,7 +65,18 @@ func (client *bitbucketcloudClient) Branches(ctx context.Context, fullname strin
 		for _, p := range b.Target.Parents {
 			branch.Parents = append(branch.Parents, p.Hash)
 		}
+		if branch.Default {
+			hasDefaultBranch = true
+		}
 		branchesResult = append(branchesResult, branch)
+	}
+
+	if !hasDefaultBranch {
+		defaultBranch, err := client.Branch(ctx, fullname, sdk.VCSBranchFilters{Default: true})
+		if err != nil {
+			return nil, err
+		}
+		branchesResult = append(branchesResult, *defaultBranch)
 	}
 
 	return branchesResult, nil
