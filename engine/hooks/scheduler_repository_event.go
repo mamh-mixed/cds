@@ -72,7 +72,8 @@ func (s *Service) manageRepositoryEvent(ctx context.Context, eventKey string) er
 
 	telemetry.Current(ctx,
 		telemetry.Tag(telemetry.TagVCSServer, hre.VCSServerName),
-		telemetry.Tag(telemetry.TagRepository, hre.RepositoryName))
+		telemetry.Tag(telemetry.TagRepository, hre.RepositoryName),
+		telemetry.Tag(telemetry.TagEventID, hre.UUID))
 
 	b, err := s.Dao.LockRepositoryEvent(hre.VCSServerType, hre.VCSServerName, hre.RepositoryName, hre.UUID)
 	if err != nil {
