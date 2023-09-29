@@ -37,7 +37,7 @@ testcases:
   steps:
   - script: {{.cdsctl}} -f {{.cdsctl.config}} project add ITCLIPFJIRA1 ITCLIPFJIRA1
   - script: {{.cdsctl}} -f {{.cdsctl.config}} project integration import ITCLIPFJIRA1 ./fixtures/integrations/jira.yml
-  - script: {{.cdsctl}} -f {{.cdsctl.config}} project integration list ITCLIPFARSENAL2
+  - script: {{.cdsctl}} -f {{.cdsctl.config}} project integration list ITCLIPFJIRA1
     assertions:
       - result.code ShouldEqual 0
       - result.systemout ShouldContainSubstring "jira"

@@ -208,8 +208,10 @@ func ParametersFromIntegration(prefix string, ppf IntegrationConfig) map[string]
 	vars := make([]Variable, len(ppf))
 	i := 0
 	for k, c := range ppf {
-		vars[i] = Variable{Name: k, Type: c.Type, Value: c.Value}
-		i++
+		if !c.Hidden {
+			vars[i] = Variable{Name: k, Type: c.Type, Value: c.Value}
+			i++
+		}
 	}
 	params := VariablesToParameters("cds.integration."+prefix, vars)
 	return ParametersToMap(params)
