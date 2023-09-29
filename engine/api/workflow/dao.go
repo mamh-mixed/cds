@@ -1146,6 +1146,7 @@ func checkProjectIntegration(proj sdk.Project, w *sdk.Workflow, n *sdk.Node) err
 // checkIntegration checks integration data
 func checkIntegration(proj sdk.Project, w *sdk.Workflow) error {
 	countArtifactManagerIntegration := 0
+	countIssueTrackerIntegration := 0
 	for i := range w.Integrations {
 		workflowIntegration := &w.Integrations[i]
 		found := false
@@ -1166,10 +1167,17 @@ func checkIntegration(proj sdk.Project, w *sdk.Workflow) error {
 		if workflowIntegration.ProjectIntegration.Model.ArtifactManager {
 			countArtifactManagerIntegration++
 		}
+		if workflowIntegration.ProjectIntegration.Model.IssueTracker {
+			countIssueTrackerIntegration++
+		}
 	}
 
 	if countArtifactManagerIntegration > 1 {
 		return sdk.NewErrorFrom(sdk.ErrInvalidData, "you can't have multiple artifact manager integrations on a workflow")
+	}
+
+	if countIssueTrackerIntegration > 1 {
+		return sdk.NewErrorFrom(sdk.ErrInvalidData, "you can't have multiple issue tracker integrations on a workflow")
 	}
 	return nil
 }

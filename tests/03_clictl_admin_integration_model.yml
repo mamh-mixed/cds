@@ -6,6 +6,8 @@ testcases:
   - script: {{.cdsctl}} -f {{.cdsctl.config}} group remove itclipfarsenal1 --force
   - script: {{.cdsctl}} -f {{.cdsctl.config}} project remove --force ITCLIPFARSENAL2
   - script: {{.cdsctl}} -f {{.cdsctl.config}} group remove itclipfarsenal2 --force
+  - script: {{.cdsctl}} -f {{.cdsctl.config}} project remove --force ITCLIPFJIRA1
+  - script: {{.cdsctl}} -f {{.cdsctl.config}} group remove ITCLIPFJIRA1 --force
 
 - name: List all the model
   steps:
@@ -28,5 +30,16 @@ testcases:
       - result.code ShouldEqual 0
       - result.systemout ShouldContainSubstring "arsenal-dev"
       - result.systemout ShouldContainSubstring "arsenal-prod"
+    retry: 10
+    delay: 10
+
+- name: Import a jira integration on a project
+  steps:
+  - script: {{.cdsctl}} -f {{.cdsctl.config}} project add ITCLIPFJIRA1 ITCLIPFJIRA1
+  - script: {{.cdsctl}} -f {{.cdsctl.config}} project integration import ITCLIPFJIRA1 ./fixtures/integrations/jira.yml
+  - script: {{.cdsctl}} -f {{.cdsctl.config}} project integration list ITCLIPFARSENAL2
+    assertions:
+      - result.code ShouldEqual 0
+      - result.systemout ShouldContainSubstring "jira"
     retry: 10
     delay: 10

@@ -17,6 +17,7 @@ var (
 		sdk.OpenstackIntegration,
 		sdk.AWSIntegration,
 		sdk.ArtifactoryIntegration,
+		sdk.JIRAIntegration,
 	}
 )
 

@@ -1,0 +1,16 @@
+name: jira
+model:
+  name: Jira
+config:
+  url:
+    type: string
+    value: "https://localhost:9093/jira"
+    hidden: true
+  password:
+    type: password
+    value: "password1"
+    hidden: true
+  username:
+    type: string
+    value: "username1"
+    hidden: true

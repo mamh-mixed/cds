@@ -15,6 +15,7 @@ import (
 
 const (
 	IntegrationArtifactManager = "artifact_manager"
+	IntegrationIssueTracker    = "issue_tracker"
 )
 
 // VariableValue is a struct to export a value of Variable
@@ -135,7 +136,7 @@ func NewWorkflow(ctx context.Context, w sdk.Workflow, version string, opts ...Ex
 	if len(w.Integrations) > 0 {
 		exportedWorkflow.WorkflowProjectIntegration = make(map[string]WorkflowProjectIntegrationEntry)
 		for _, integ := range w.Integrations {
-			if !integ.ProjectIntegration.Model.ArtifactManager {
+			if !integ.ProjectIntegration.Model.ArtifactManager && !integ.ProjectIntegration.Model.IssueTracker {
 				continue
 			}
 			config := make(map[string]VariableValue)
@@ -145,9 +146,17 @@ func NewWorkflow(ctx context.Context, w sdk.Workflow, version string, opts ...Ex
 					Value: v.Value,
 				}
 			}
-			exportedWorkflow.WorkflowProjectIntegration[integ.ProjectIntegration.Name] = WorkflowProjectIntegrationEntry{
-				IntegrationType: IntegrationArtifactManager,
-				Config:          config,
+			if integ.ProjectIntegration.Model.ArtifactManager {
+				exportedWorkflow.WorkflowProjectIntegration[integ.ProjectIntegration.Name] = WorkflowProjectIntegrationEntry{
+					IntegrationType: IntegrationArtifactManager,
+					Config:          config,
+				}
+			}
+			if integ.ProjectIntegration.Model.IssueTracker {
+				exportedWorkflow.WorkflowProjectIntegration[integ.ProjectIntegration.Name] = WorkflowProjectIntegrationEntry{
+					IntegrationType: IntegrationIssueTracker,
+					Config:          config,
+				}
 			}
 		}
 	}
@@ -487,6 +496,8 @@ func (w Workflow) GetWorkflow(ctx context.Context) (*sdk.Workflow, error) {
 		}
 		if entry.IntegrationType == IntegrationArtifactManager {
 			wkInteg.ProjectIntegration.Model.ArtifactManager = true
+		} else if entry.IntegrationType == IntegrationIssueTracker {
+			wkInteg.ProjectIntegration.Model.IssueTracker = true
 		} else {
 			wkInteg.ProjectIntegration.Model.Event = true
 		}

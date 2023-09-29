@@ -15,6 +15,7 @@ const (
 	AWSIntegrationModel             = "AWS"
 	DefaultStorageIntegrationName   = "shared.infra"
 	ArtifactoryIntegrationModelName = "Artifactory"
+	JiraIntegrationModelName        = "Jira"
 
 	ArtifactoryConfigPlatform              = "platform"
 	ArtifactoryConfigURL                   = "url"
@@ -202,17 +203,39 @@ var (
 		Disabled: false,
 		Hook:     false,
 	}
+
+	JIRAIntegration = IntegrationModel{
+		Name:       JiraIntegrationModelName,
+		Author:     "CDS",
+		Identifier: "github.com/ovh/cds/integration/builtin/jira",
+		Icon:       "",
+		DefaultConfig: IntegrationConfig{
+			"url": IntegrationConfigValue{
+				Type:   IntegrationConfigTypeString,
+				Hidden: true,
+			},
+			"username": IntegrationConfigValue{
+				Type:   IntegrationConfigTypeString,
+				Hidden: true,
+			},
+			"password": IntegrationConfigValue{
+				Type:   IntegrationConfigTypeString,
+				Hidden: true,
+			},
+		},
+	}
 )
 
 // IntegrationType represents all different type of integrations
 type IntegrationType string
 
 const (
-	IntegrationTypeEvent      = IntegrationType("event")
-	IntegrationTypeCompute    = IntegrationType("compute")
-	IntegrationTypeHook       = IntegrationType("hook")
-	IntegrationTypeStorage    = IntegrationType("storage")
-	IntegrationTypeDeployment = IntegrationType("deployment")
+	IntegrationTypeEvent        = IntegrationType("event")
+	IntegrationTypeCompute      = IntegrationType("compute")
+	IntegrationTypeHook         = IntegrationType("hook")
+	IntegrationTypeStorage      = IntegrationType("storage")
+	IntegrationTypeDeployment   = IntegrationType("deployment")
+	IntegrationTypeIssueTracker = IntegrationType("issueTracker")
 )
 
 // DefaultIfEmptyStorage return sdk.DefaultStorageIntegrationName if integrationName is empty
@@ -326,6 +349,7 @@ type IntegrationConfigValue struct {
 	Type        string `json:"type" yaml:"type"`
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Static      bool   `json:"static,omitempty" yaml:"static,omitempty"`
+	Hidden      bool   `json:"hidden,omitempty" yaml:"hidden,omitempty"`
 }
 
 type IntegrationConfigMap map[string]IntegrationConfig
@@ -394,6 +418,7 @@ type IntegrationModel struct {
 	Event                   bool                 `json:"event" db:"event" yaml:"event" cli:"event_supported"`
 	ArtifactManager         bool                 `json:"artifact_manager" db:"artifact_manager" yaml:"artifact_manager" cli:"artifact_manager_supported"`
 	Public                  bool                 `json:"public,omitempty" db:"public" yaml:"public,omitempty"`
+	IssueTracker            bool                 `json:"issue_tracker,omitempty" db:"issue_tracker" yaml:"issue_tracker,omitempty"`
 }
 
 func (p *IntegrationModel) Blur() {

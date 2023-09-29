@@ -992,6 +992,8 @@ integrations:
       build.info:
         type: string
         value: monbuildinfo
+  jira:
+    type: issue_tracker
 `,
 		},
 		{
