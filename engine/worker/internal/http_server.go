@@ -62,6 +62,7 @@ func (w *CurrentWorker) Serve(c context.Context) error {
 	r.HandleFunc("/run-result/add/static-file", LogMiddleware(addRunResultStaticFileHandler(c, w)))
 	r.HandleFunc("/vulnerability", LogMiddleware(vulnerabilityHandler(c, w)))
 	r.HandleFunc("/version", LogMiddleware(setVersionHandler(c, w)))
+	r.HandleFunc("/integrations/{integration}", LogMiddleware(getIntegrationHandler(c, w)))
 
 	srv := &http.Server{
 		Handler: r,

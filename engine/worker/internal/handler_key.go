@@ -42,7 +42,7 @@ func keyInstallHandler(ctx context.Context, wk *CurrentWorker) http.HandlerFunc 
 
 		if wk.currentJob.secrets == nil {
 			log.Error(ctx, "%v", err)
-			writeError(w, r, sdk.NewError(sdk.ErrWrongRequest, fmt.Errorf("Cannot find any keys for your job")))
+			writeError(w, r, sdk.NewError(sdk.ErrWrongRequest, fmt.Errorf("cannot find any keys for your job")))
 			return
 		}
 
@@ -55,7 +55,7 @@ func keyInstallHandler(ctx context.Context, wk *CurrentWorker) http.HandlerFunc 
 
 		if key == nil {
 			log.Error(ctx, "%v", err)
-			writeError(w, r, sdk.NewError(sdk.ErrNotFound, fmt.Errorf("Cannot find any keys for your job")))
+			writeError(w, r, sdk.NewError(sdk.ErrNotFound, fmt.Errorf("cannot find any keys for your job")))
 			return
 		}
 

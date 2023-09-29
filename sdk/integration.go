@@ -341,6 +341,7 @@ const (
 
 	IntegrationVariablePrefixDeployment      = "deployment"
 	IntegrationVariablePrefixArtifactManager = "artifact_manager"
+	IntegrationVariablePrefixIssueTracker    = "issue_tracker"
 )
 
 // IntegrationConfigValue represent a configuration value for a integration
@@ -368,6 +369,9 @@ func GetIntegrationVariablePrefix(model IntegrationModel) string {
 	}
 	if model.ArtifactManager {
 		return IntegrationVariablePrefixArtifactManager
+	}
+	if model.IssueTracker {
+		return IntegrationVariablePrefixIssueTracker
 	}
 	return ""
 }

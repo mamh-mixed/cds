@@ -25,11 +25,11 @@ func (wk *CurrentWorker) InstallKey(key sdk.Variable) (*workerruntime.KeyRespons
 
 		installedKeyPath := path.Join(keysDirectory.Name(), key.Name)
 		if err := vcs.CleanAllSSHKeys(wk.basedir, keysDirectory.Name()); err != nil {
-			return nil, sdk.NewError(sdk.ErrUnknownError, fmt.Errorf("Cannot clean ssh keys : %v", err))
+			return nil, sdk.NewError(sdk.ErrUnknownError, fmt.Errorf("cannot clean ssh keys : %v", err))
 		}
 
 		if err := vcs.SetupSSHKey(wk.basedir, keysDirectory.Name(), key); err != nil {
-			return nil, sdk.NewError(sdk.ErrUnknownError, fmt.Errorf("Cannot setup ssh key %s : %v", key.Name, err))
+			return nil, sdk.NewError(sdk.ErrUnknownError, fmt.Errorf("cannot setup ssh key %s : %v", key.Name, err))
 		}
 
 		if x, ok := wk.BaseDir().(*afero.BasePathFs); ok {
@@ -51,24 +51,24 @@ func (wk *CurrentWorker) InstallKey(key sdk.Variable) (*workerruntime.KeyRespons
 
 		if !gpg2Found {
 			if _, err := exec.LookPath("gpg"); err != nil {
-				return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Cannot use gpg in your worker because you haven't gpg or gpg2 binary"))
+				return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("cannot use gpg in your worker because you haven't gpg or gpg2 binary"))
 			}
 		}
 		content := []byte(key.Value)
 		tmpfile, errTmpFile := os.CreateTemp("", key.Name)
 		if errTmpFile != nil {
-			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Cannot setup pgp key %s : %v", key.Name, errTmpFile))
+			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("cannot setup pgp key %s : %v", key.Name, errTmpFile))
 		}
 		defer func() {
 			_ = os.Remove(tmpfile.Name())
 		}()
 
 		if _, err := tmpfile.Write(content); err != nil {
-			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Cannot setup pgp key file %s : %v", key.Name, err))
+			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("cannot setup pgp key file %s : %v", key.Name, err))
 		}
 
 		if err := tmpfile.Close(); err != nil {
-			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Cannot setup pgp key file %s (close) : %v", key.Name, err))
+			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("cannot setup pgp key file %s (close) : %v", key.Name, err))
 		}
 
 		gpgBin := "gpg"
@@ -81,9 +81,9 @@ func (wk *CurrentWorker) InstallKey(key sdk.Variable) (*workerruntime.KeyRespons
 		cmd.Stdout = &out
 		cmd.Stderr = &outErr
 		if err := cmd.Run(); err != nil {
-			outString := string(out.Bytes())
-			outErrString := string(outErr.Bytes())
-			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Cannot import pgp key %s (%v): %s %s", key.Name, err, outString, outErrString))
+			outString := out.String()
+			outErrString := outErr.String()
+			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("cannot import pgp key %s (%v): %s %s", key.Name, err, outString, outErrString))
 		}
 		return &workerruntime.KeyResponse{
 			Type:    sdk.KeyTypePGP,
@@ -92,7 +92,7 @@ func (wk *CurrentWorker) InstallKey(key sdk.Variable) (*workerruntime.KeyRespons
 		}, nil
 
 	default:
-		return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Type key %s is not implemented", key.Type))
+		return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("type key %s is not implemented", key.Type))
 	}
 }
 
@@ -115,7 +115,7 @@ func (wk *CurrentWorker) InstallKeyTo(key sdk.Variable, destinationPath string) 
 		}
 
 		if err := vcs.WriteKey(afero.NewOsFs(), destinationPath, key.Value); err != nil {
-			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Cannot setup ssh key %s : %v", key.Name, err))
+			return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("cannot setup ssh key %s : %v", key.Name, err))
 		}
 
 		return &workerruntime.KeyResponse{
@@ -136,6 +136,6 @@ func (wk *CurrentWorker) InstallKeyTo(key sdk.Variable, destinationPath string) 
 		}, nil
 
 	default:
-		return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("Type key %s is not implemented", key.Type))
+		return nil, sdk.NewError(sdk.ErrWorkerErrorCommand, fmt.Errorf("type key %s is not implemented", key.Type))
 	}
 }

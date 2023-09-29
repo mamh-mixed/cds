@@ -12,6 +12,33 @@ import (
 	"github.com/ovh/cds/sdk"
 )
 
+func GetProjectIntegration(workerHTTPPort int32, integration string) (*sdk.ProjectIntegration, error) {
+	if workerHTTPPort == 0 {
+		return nil, nil
+	}
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://127.0.0.1:%d/integration/%s", workerHTTPPort, integration), nil)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create request to get integration: %v", err)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("cannot get run result integration: %v", err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read body on get integration: %v", err)
+	}
+	if resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("cannot get run integration: HTTP %d", resp.StatusCode)
+	}
+	var result sdk.ProjectIntegration
+	if err := sdk.JSONUnmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("unable to unmarshal response: %v", err)
+	}
+	return &result, nil
+}
+
 func GetRunResults(workerHTTPPort int32) ([]sdk.WorkflowRunResult, error) {
 	if workerHTTPPort == 0 {
 		return nil, nil

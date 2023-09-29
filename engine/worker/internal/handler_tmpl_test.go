@@ -73,7 +73,7 @@ func Test_tmplHandler(t *testing.T) {
 	require.NoError(t, err)
 	handler(w, r)
 
-	t.Logf("result: %d : %v", w.Code, string(w.Body.Bytes()))
+	t.Logf("result: %d : %v", w.Code, w.Body.String())
 
 	output, err := fs.Open("output")
 	require.NoError(t, err)
