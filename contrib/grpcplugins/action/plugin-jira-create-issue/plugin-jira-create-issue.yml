@@ -1,0 +1,14 @@
+name: plugin-jira-create-issue
+type: action
+integration: Jira
+author: "OVH SAS"
+description: "Create a JIRA issue"
+inputs:
+  summary:
+    type: string
+  type:
+    type: string
+  projectKey:
+    type: string
+  description:
+    type: string
