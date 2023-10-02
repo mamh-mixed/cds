@@ -219,7 +219,7 @@ var (
 				Hidden: true,
 			},
 			"password": IntegrationConfigValue{
-				Type:   IntegrationConfigTypeString,
+				Type:   IntegrationConfigTypePassword,
 				Hidden: true,
 			},
 		},
