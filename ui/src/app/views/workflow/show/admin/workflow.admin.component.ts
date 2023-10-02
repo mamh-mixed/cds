@@ -58,7 +58,7 @@ export class WorkflowAdminComponent implements OnInit, OnDestroy {
     set project(project: Project) {
         this._project = project;
         if (project.integrations) {
-            this.filteredIntegrations = cloneDeep(project.integrations.filter(p => p.model.artifact_manager));
+            this.filteredIntegrations = cloneDeep(project.integrations.filter(p => p.model.artifact_manager || p.model.issue_tracker));
         }
     }
 

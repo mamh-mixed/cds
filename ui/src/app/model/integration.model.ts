@@ -14,6 +14,7 @@ export class IntegrationModel {
     compute: boolean;
     event: boolean;
     public: boolean;
+    issue_tracker: boolean;
 }
 
 export class ProjectIntegration {
