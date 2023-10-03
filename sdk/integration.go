@@ -223,6 +223,7 @@ var (
 				Hidden: true,
 			},
 		},
+		IssueTracker: true,
 	}
 )
 
