@@ -78,6 +78,14 @@ func TestCraftWorkflowRunNoHatchery(t *testing.T) {
 				},
 			},
 		},
+		Event: sdk.V2WorkflowRunEvent{
+			GitTrigger: &sdk.GitTrigger{
+				Payload:   nil,
+				Ref:       "main",
+				Sha:       "123456",
+				EventName: "push",
+			},
+		},
 	}
 	require.NoError(t, workflow_v2.InsertRun(ctx, db, &wr))
 
@@ -149,6 +157,14 @@ func TestCraftWorkflowRunDepsNotFound(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		Event: sdk.V2WorkflowRunEvent{
+			GitTrigger: &sdk.GitTrigger{
+				Payload:   nil,
+				Ref:       "main",
+				Sha:       "123456",
+				EventName: "push",
 			},
 		},
 	}
@@ -231,13 +247,17 @@ func TestCraftWorkflowRunDepsSameRepo(t *testing.T) {
 								ID:   "mythirdStep",
 								Uses: fmt.Sprintf("actions/%s/myaction", repo.Name),
 							},
-							{
-								ID:   "myfourthStep",
-								Uses: fmt.Sprintf("actions/myaction"),
-							},
 						},
 					},
 				},
+			},
+		},
+		Event: sdk.V2WorkflowRunEvent{
+			GitTrigger: &sdk.GitTrigger{
+				Payload:   nil,
+				Ref:       "main",
+				Sha:       "123456",
+				EventName: "push",
 			},
 		},
 	}
@@ -353,6 +373,14 @@ func TestCraftWorkflowRunDepsDifferentRepo(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		Event: sdk.V2WorkflowRunEvent{
+			GitTrigger: &sdk.GitTrigger{
+				Payload:   nil,
+				Ref:       "main",
+				Sha:       "123456",
+				EventName: "push",
 			},
 		},
 	}
