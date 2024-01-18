@@ -26,12 +26,14 @@ type gerritConsumer struct {
 	disableStatusDetails bool
 	sshUsername          string
 	sshPort              int
+	username             string
+	token                string
 	reviewerName         string
 	reviewerToken        string
 }
 
 // New instantiate a new gerrit consumer
-func New(URL string, store cache.Store, sshUsername string, sshPort int, reviewerName, reviewerToken string) sdk.VCSServer {
+func New(URL string, store cache.Store, sshUsername string, sshPort int, username, token, reviewerName, reviewerToken string) sdk.VCSServer {
 	return &gerritConsumer{
 		URL:           URL,
 		cache:         store,
@@ -39,6 +41,8 @@ func New(URL string, store cache.Store, sshUsername string, sshPort int, reviewe
 		sshPort:       sshPort,
 		reviewerName:  reviewerName,
 		reviewerToken: reviewerToken,
+		username:      username,
+		token:         token,
 	}
 }
 

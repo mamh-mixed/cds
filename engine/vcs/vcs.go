@@ -119,6 +119,8 @@ func (s *Service) getConsumer(name string, vcsAuth sdk.VCSAuth) (sdk.VCSServer, 
 				vcsAuth.SSHPort,
 				vcsAuth.Username,
 				vcsAuth.Token,
+				vcsAuth.ReviewerUsername,
+				vcsAuth.ReviewerToken,
 			), nil
 		case sdk.VCSTypeGithub:
 			return github.New(

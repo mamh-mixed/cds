@@ -265,6 +265,8 @@ func (c *vcsClient) setAuthHeader(ctx context.Context, req *http.Request) {
 		req.Header.Set(sdk.HeaderXVCSSSHUsername, base64.StdEncoding.EncodeToString([]byte(c.vcsProject.Auth.SSHUsername)))
 		req.Header.Set(sdk.HeaderXVCSSSHPort, base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(c.vcsProject.Auth.SSHPort))))
 		req.Header.Set(sdk.HeaderXVCSSSHPrivateKey, base64.StdEncoding.EncodeToString([]byte(c.vcsProject.Auth.SSHPrivateKey)))
+		req.Header.Set(sdk.HeaderXVCSReviewerUsername, base64.StdEncoding.EncodeToString([]byte(c.vcsProject.Auth.ReviewerUsername)))
+		req.Header.Set(sdk.HeaderXVCSReviewerToken, base64.StdEncoding.EncodeToString([]byte(c.vcsProject.Auth.ReviewerToken)))
 	} else {
 		log.Debug(ctx, "requesting vcs via vcs oauth2")
 		req.Header.Set(sdk.HeaderXAccessToken, base64.StdEncoding.EncodeToString([]byte(c.token)))

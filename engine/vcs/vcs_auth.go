@@ -15,14 +15,16 @@ import (
 type contextKey string
 
 var (
-	contextKeyVCSURL             contextKey = "vcs-url"
-	contextKeyVCSURLApi          contextKey = "vcs-url-api"
-	contextKeyVCSType            contextKey = "vcs-type"
-	contextKeyVCSUsername        contextKey = "vcs-username"
-	contextKeyVCSToken           contextKey = "vcs-token"
-	contextKeyAccessToken        contextKey = "access-token"         // DEPRECATED VCS
-	contextKeyAccessTokenCreated contextKey = "access-token-created" // DEPRECATED VCS
-	contextKeyAccessTokenSecret  contextKey = "access-token-secret"  // DEPRECATED VCS
+	contextKeyVCSURL              contextKey = "vcs-url"
+	contextKeyVCSURLApi           contextKey = "vcs-url-api"
+	contextKeyVCSType             contextKey = "vcs-type"
+	contextKeyVCSUsername         contextKey = "vcs-username"
+	contextKeyVCSToken            contextKey = "vcs-token"
+	contextKeyVCSReviewerUsername contextKey = "vcs-reviewer-username"
+	contextKeyVCSReviewerToken    contextKey = "vcs-reviewer-token"
+	contextKeyAccessToken         contextKey = "access-token"         // DEPRECATED VCS
+	contextKeyAccessTokenCreated  contextKey = "access-token-created" // DEPRECATED VCS
+	contextKeyAccessTokenSecret   contextKey = "access-token-secret"  // DEPRECATED VCS
 )
 
 func (s *Service) authMiddleware(ctx context.Context, w http.ResponseWriter, req *http.Request, rc *service.HandlerConfig) (context.Context, error) {
@@ -52,6 +54,19 @@ func (s *Service) authMiddleware(ctx context.Context, w http.ResponseWriter, req
 		ctx = context.WithValue(ctx, contextKeyVCSType, string(vcsType))
 		ctx = context.WithValue(ctx, contextKeyVCSUsername, string(vcsUsername))
 		ctx = context.WithValue(ctx, contextKeyVCSToken, string(vcsToken))
+
+		if string(vcsType) == sdk.VCSTypeGerrit {
+			vcsReviewerUsername, err := base64.StdEncoding.DecodeString(req.Header.Get(sdk.HeaderXVCSReviewerUsername))
+			if err != nil {
+				return nil, sdk.WrapError(err, "bad header syntax for HeaderXVCSReviewerUsername")
+			}
+			vcsReviewerToken, err := base64.StdEncoding.DecodeString(req.Header.Get(sdk.HeaderXVCSReviewerToken))
+			if err != nil {
+				return nil, sdk.WrapError(err, "bad header syntax for HeaderXVCSReviewerToken")
+			}
+			ctx = context.WithValue(ctx, contextKeyVCSReviewerUsername, string(vcsReviewerUsername))
+			ctx = context.WithValue(ctx, contextKeyVCSReviewerToken, string(vcsReviewerToken))
+		}
 		return ctx, nil
 	}
 
@@ -103,6 +118,13 @@ func getVCSAuth(ctx context.Context) (sdk.VCSAuth, error) {
 
 		token, _ := ctx.Value(contextKeyVCSToken).(string)
 		vcsAuth.Token = token
+
+		if vcsType == sdk.VCSTypeGerrit {
+			reviewerUsername, _ := ctx.Value(contextKeyVCSReviewerUsername).(string)
+			vcsAuth.ReviewerUsername = reviewerUsername
+			reviewerToken, _ := ctx.Value(contextKeyVCSReviewerToken).(string)
+			vcsAuth.ReviewerToken = reviewerToken
+		}
 
 		return vcsAuth, nil
 	}

@@ -14,14 +14,16 @@ import (
 
 // HTTP Headers
 const (
-	HeaderXVCSURL           = "X-CDS-VCS-URL"
-	HeaderXVCSURLApi        = "X-CDS-VCS-URL-API"
-	HeaderXVCSType          = "X-CDS-VCS-TYPE"
-	HeaderXVCSToken         = "X-CDS-VCS-TOKEN"
-	HeaderXVCSUsername      = "X-CDS-VCS-USERNAME"
-	HeaderXVCSSSHUsername   = "X-CDS-VCS-SSH-USERNAME"
-	HeaderXVCSSSHPort       = "X-CDS-VCS-SSH-PORT"
-	HeaderXVCSSSHPrivateKey = "X-CDS-VCS-SSH-PRIVATE-KEY"
+	HeaderXVCSURL              = "X-CDS-VCS-URL"
+	HeaderXVCSURLApi           = "X-CDS-VCS-URL-API"
+	HeaderXVCSType             = "X-CDS-VCS-TYPE"
+	HeaderXVCSToken            = "X-CDS-VCS-TOKEN"
+	HeaderXVCSUsername         = "X-CDS-VCS-USERNAME"
+	HeaderXVCSReviewerToken    = "X-CDS-VCS-REVIEWER-TOKEN"
+	HeaderXVCSReviewerUsername = "X-CDS-VCS-REVIEWER-USERNAME"
+	HeaderXVCSSSHUsername      = "X-CDS-VCS-SSH-USERNAME"
+	HeaderXVCSSSHPort          = "X-CDS-VCS-SSH-PORT"
+	HeaderXVCSSSHPrivateKey    = "X-CDS-VCS-SSH-PRIVATE-KEY"
 
 	HeaderXAccessToken        = "X-CDS-ACCESS-TOKEN"         // DEPRECATED
 	HeaderXAccessTokenCreated = "X-CDS-ACCESS-TOKEN-CREATED" // DEPRECATED
@@ -219,9 +221,11 @@ type VCSAuthProject struct {
 	SSHKeyName string `json:"sshKeyName,omitempty" db:"-"`
 
 	// Used by gerrit
-	SSHUsername   string `json:"sshUsername,omitempty" db:"-"`
-	SSHPort       int    `json:"sshPort,omitempty" db:"-"`
-	SSHPrivateKey string `json:"sshPrivateKey,omitempty" db:"-"`
+	SSHUsername      string `json:"sshUsername,omitempty" db:"-"`
+	SSHPort          int    `json:"sshPort,omitempty" db:"-"`
+	SSHPrivateKey    string `json:"sshPrivateKey,omitempty" db:"-"`
+	ReviewerUsername string `json:"reviewerUsername,omitempty" db:"-"`
+	ReviewerToken    string `json:"reviewerToken,omitempty" db:"-"`
 }
 
 type VCSOptionsProject struct {
@@ -301,8 +305,11 @@ type VCSAuth struct {
 	Username string
 	Token    string
 
-	SSHUsername string
-	SSHPort     int
+	SSHUsername string // Gerrit
+	SSHPort     int    // Gerrit
+
+	ReviewerUsername string // Gerrit
+	ReviewerToken    string // Gerrit
 
 	AccessToken        string // DEPRECATED
 	AccessTokenSecret  string // DEPRECATED
