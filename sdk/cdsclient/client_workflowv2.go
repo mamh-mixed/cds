@@ -28,6 +28,14 @@ func (c *client) WorkflowV2Run(ctx context.Context, projectKey, vcsIdentifier, r
 	return &hookRunRevent, nil
 }
 
+func (c *client) WorkflowV2RunSearchAllProjects(ctx context.Context, mods ...RequestModifier) ([]sdk.V2WorkflowRun, error) {
+	var runs []sdk.V2WorkflowRun
+	if _, err := c.GetJSON(ctx, "/v2/run", &runs, mods...); err != nil {
+		return nil, err
+	}
+	return runs, nil
+}
+
 func (c *client) WorkflowV2RunSearch(ctx context.Context, projectKey string, mods ...RequestModifier) ([]sdk.V2WorkflowRun, error) {
 	var runs []sdk.V2WorkflowRun
 	path := fmt.Sprintf("/v2/project/%s/run", projectKey)
