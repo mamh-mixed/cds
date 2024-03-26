@@ -497,6 +497,9 @@ func (api *API) getWorkflowRunsSearchAllProjectV2Handler() ([]service.RbacChecke
 			if err != nil {
 				return err
 			}
+			if count == 0 {
+				return service.WriteJSON(w, []sdk.V2WorkflowRun{}, http.StatusOK)
+			}
 
 			runs, err := workflow_v2.SearchAllRuns(ctx, api.mustDB(), filters, offset, limit)
 			if err != nil {
