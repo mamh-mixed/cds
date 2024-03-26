@@ -5594,9 +5594,9 @@ func (mr *MockWorkflowV2ClientMockRecorder) WorkflowV2RunSearch(ctx, projectKey 
 }
 
 // WorkflowV2RunSearchAllProjects mocks base method.
-func (m *MockWorkflowV2Client) WorkflowV2RunSearchAllProjects(ctx context.Context, mods ...cdsclient.RequestModifier) ([]sdk.V2WorkflowRun, error) {
+func (m *MockWorkflowV2Client) WorkflowV2RunSearchAllProjects(ctx context.Context, offset, limit int64, mods ...cdsclient.RequestModifier) ([]sdk.V2WorkflowRun, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx}
+	varargs := []interface{}{ctx, offset, limit}
 	for _, a := range mods {
 		varargs = append(varargs, a)
 	}
@@ -5607,9 +5607,9 @@ func (m *MockWorkflowV2Client) WorkflowV2RunSearchAllProjects(ctx context.Contex
 }
 
 // WorkflowV2RunSearchAllProjects indicates an expected call of WorkflowV2RunSearchAllProjects.
-func (mr *MockWorkflowV2ClientMockRecorder) WorkflowV2RunSearchAllProjects(ctx interface{}, mods ...interface{}) *gomock.Call {
+func (mr *MockWorkflowV2ClientMockRecorder) WorkflowV2RunSearchAllProjects(ctx, offset, limit interface{}, mods ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx}, mods...)
+	varargs := append([]interface{}{ctx, offset, limit}, mods...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WorkflowV2RunSearchAllProjects", reflect.TypeOf((*MockWorkflowV2Client)(nil).WorkflowV2RunSearchAllProjects), varargs...)
 }
 
@@ -11718,9 +11718,9 @@ func (mr *MockInterfaceMockRecorder) WorkflowV2RunSearch(ctx, projectKey interfa
 }
 
 // WorkflowV2RunSearchAllProjects mocks base method.
-func (m *MockInterface) WorkflowV2RunSearchAllProjects(ctx context.Context, mods ...cdsclient.RequestModifier) ([]sdk.V2WorkflowRun, error) {
+func (m *MockInterface) WorkflowV2RunSearchAllProjects(ctx context.Context, offset, limit int64, mods ...cdsclient.RequestModifier) ([]sdk.V2WorkflowRun, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx}
+	varargs := []interface{}{ctx, offset, limit}
 	for _, a := range mods {
 		varargs = append(varargs, a)
 	}
@@ -11731,9 +11731,9 @@ func (m *MockInterface) WorkflowV2RunSearchAllProjects(ctx context.Context, mods
 }
 
 // WorkflowV2RunSearchAllProjects indicates an expected call of WorkflowV2RunSearchAllProjects.
-func (mr *MockInterfaceMockRecorder) WorkflowV2RunSearchAllProjects(ctx interface{}, mods ...interface{}) *gomock.Call {
+func (mr *MockInterfaceMockRecorder) WorkflowV2RunSearchAllProjects(ctx, offset, limit interface{}, mods ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx}, mods...)
+	varargs := append([]interface{}{ctx, offset, limit}, mods...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WorkflowV2RunSearchAllProjects", reflect.TypeOf((*MockInterface)(nil).WorkflowV2RunSearchAllProjects), varargs...)
 }
 

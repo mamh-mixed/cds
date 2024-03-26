@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/ovh/cds/sdk"
 )
@@ -28,7 +29,17 @@ func (c *client) WorkflowV2Run(ctx context.Context, projectKey, vcsIdentifier, r
 	return &hookRunRevent, nil
 }
 
-func (c *client) WorkflowV2RunSearchAllProjects(ctx context.Context, mods ...RequestModifier) ([]sdk.V2WorkflowRun, error) {
+func (c *client) WorkflowV2RunSearchAllProjects(ctx context.Context, offset, limit int64, mods ...RequestModifier) ([]sdk.V2WorkflowRun, error) {
+	if offset < 0 {
+		offset = 0
+	}
+	if limit == 0 {
+		limit = 50
+	}
+
+	mods = append(mods, WithQueryParameter("offset", strconv.FormatInt(offset, 10)))
+	mods = append(mods, WithQueryParameter("limit", strconv.FormatInt(limit, 10)))
+
 	var runs []sdk.V2WorkflowRun
 	if _, err := c.GetJSON(ctx, "/v2/run", &runs, mods...); err != nil {
 		return nil, err

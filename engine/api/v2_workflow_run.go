@@ -524,6 +524,7 @@ func (api *API) getWorkflowRunsSearchV2Handler() ([]service.RbacChecker, service
 				Status:       req.URL.Query()["status"],
 				Branches:     req.URL.Query()["branch"],
 				Repositories: req.URL.Query()["repository"],
+				Commits:      req.URL.Query()["commit"],
 			}
 
 			proj, err := project.Load(ctx, api.mustDB(), pKey)
