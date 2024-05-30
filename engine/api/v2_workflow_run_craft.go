@@ -247,6 +247,9 @@ func (api *API) craftWorkflowRunV2(ctx context.Context, id string) error {
 	// Retrieve all deps
 	for jobID := range run.WorkflowData.Workflow.Jobs {
 		j := run.WorkflowData.Workflow.Jobs[jobID]
+		if len(j.Steps) == 0 {
+			continue
+		}
 
 		// Get actions and sub actions
 		msg, err := searchActions(ctx, api.mustDB(), api.Cache, wref, j.Steps)

@@ -44,7 +44,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/js-yaml/dist/js-yaml.js"
+            ]
           },
           "configurations": {
             "production": {

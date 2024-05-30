@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 
 import { Command } from ".";
-import { isCDSWorkflowFile } from "../cds/file_utils";
+import { isCDSWorkflowFile, isCDSWorkflowTemplateFile } from "../cds/file_utils";
 import { CDSPreview } from "../preview";
+import { Journal } from "../utils/journal";
 
 export const PreviewWorkflowCommandID = 'vscode-cds.previewWorkflow';
 
@@ -15,7 +16,10 @@ export class PreviewWorkflowCommand implements Command {
 
     async run(): Promise<void> {
         if (vscode.window.activeTextEditor?.document.uri && isCDSWorkflowFile(vscode.window.activeTextEditor.document)) {
-            this.instance.load(vscode.window.activeTextEditor?.document.uri);
+            this.instance.load(vscode.window.activeTextEditor?.document.uri, 'workflow');
+        }
+        if (vscode.window.activeTextEditor?.document.uri && isCDSWorkflowTemplateFile(vscode.window.activeTextEditor.document)) {
+            this.instance.load(vscode.window.activeTextEditor?.document.uri, 'workflow-template');
         }
     }
 }

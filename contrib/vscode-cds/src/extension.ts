@@ -34,6 +34,9 @@ const schemas = {
     'worker-model': [
         new RegExp(/\/.cds\/worker-models\/.+\.ya?ml$/),
     ],
+    'workflow-template': [
+        new RegExp(/\/.cds\/workflow-templates\/.+\.ya?ml$/),
+    ],
 };
 
 export async function activate(context: vscode.ExtensionContext) {

@@ -12,6 +12,23 @@
   border-color: var(--vscode-foreground) !important;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 foreignObject {
   overflow: visible;
+}
+
+.alert.error{
+  padding: 15px;
+  margin: 0;
+  box-sizing: border-box;
+  border: 1px solid #ffccc7;
+  background-color: #fff2f0;
+  color: #000000d9;
+  font-size: 14px;
+  line-height: 1.5715;
+  word-wrap: break-word;
+  border-radius: 2px;
 }
