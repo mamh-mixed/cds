@@ -7,6 +7,7 @@ import (
 	"errors"
 	"text/template"
 
+	"github.com/ovh/cds/sdk/interpolate"
 	"github.com/rockbears/yaml"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -19,6 +20,16 @@ type V2WorkflowTemplate struct {
 	Parameters   WorkflowTemplateParameters `json:"parameters"`
 	CommitStatus *CommitStatus              `json:"commit-status,omitempty"`
 	Spec         WorkflowSpec               `json:"spec"`
+}
+
+type V2WorkflowTemplateGenerateRequest struct {
+	Template V2WorkflowTemplate `json:"template"`
+	Params   map[string]string  `json:"params"`
+}
+
+type V2WorkflowTemplateGenerateResponse struct {
+	Errors   []string   `json:"errors"`
+	Workflow V2Workflow `json:"workflow"`
 }
 
 func (wt V2WorkflowTemplate) Lint() (errs []error) {
@@ -119,7 +130,7 @@ func (t *WorkflowSpec) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	tpl, err := template.New("workflow_template").Delims("[[", "]]").Parse(strData)
+	tpl, err := template.New("workflow_template").Funcs(interpolate.InterpolateHelperFuncs).Delims("[[", "]]").Parse(strData)
 	if err != nil {
 		return err
 	}
