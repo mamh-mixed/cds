@@ -1,5 +1,5 @@
 export interface WorkflowGenerateResponse {
-    readonly errors: string[];
+    readonly error: string;
     readonly workflow: any;
 }
 

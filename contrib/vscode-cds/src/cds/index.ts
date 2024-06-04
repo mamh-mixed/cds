@@ -54,9 +54,7 @@ export class CDS {
         args.push("--format", "json");
 
         const resp = (await CDS.getInstance().runCtl(...args));
-        Journal.logInfo(resp);
         const generatedWorkflow = JSON.parse(resp);
-
         return generatedWorkflow;
     }
 

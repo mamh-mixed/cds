@@ -2,16 +2,16 @@ import * as vscode from "vscode";
 
 import { Command } from ".";
 import { isCDSWorkflowFile, isCDSWorkflowTemplateFile } from "../cds/file_utils";
-import { CDSPreview } from "../preview";
+import { CDSWorkflowPreview } from "../preview";
 import { Journal } from "../utils/journal";
 
 export const PreviewWorkflowCommandID = 'vscode-cds.previewWorkflow';
 
 export class PreviewWorkflowCommand implements Command {
-    constructor(private instance: CDSPreview) { }
+    constructor(private instance: CDSWorkflowPreview) { }
 
     getID(): string {
-        return PreviewWorkflowCommandID
+        return PreviewWorkflowCommandID;
     }
 
     async run(): Promise<void> {

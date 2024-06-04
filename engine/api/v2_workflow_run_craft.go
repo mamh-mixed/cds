@@ -195,7 +195,7 @@ func (api *API) craftWorkflowRunV2(ctx context.Context, id string) error {
 			return stopRun(ctx, api.mustDB(), api.Cache, run, *u, *msg)
 		}
 
-		if err := e.Template.Resolve(ctx, &run.WorkflowData.Workflow); err != nil {
+		if _, err := e.Template.Resolve(ctx, &run.WorkflowData.Workflow); err != nil {
 			return stopRun(ctx, api.mustDB(), api.Cache, run, *u, sdk.V2WorkflowRunInfo{
 				WorkflowRunID: run.ID,
 				Level:         sdk.WorkflowRunInfoLevelError,

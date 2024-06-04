@@ -20,15 +20,19 @@ foreignObject {
   overflow: visible;
 }
 
-.alert.error{
-  padding: 15px;
-  margin: 0;
-  box-sizing: border-box;
-  border: 1px solid #ffccc7;
-  background-color: #fff2f0;
-  color: #000000d9;
-  font-size: 14px;
-  line-height: 1.5715;
-  word-wrap: break-word;
-  border-radius: 2px;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  .templateButtons {
+    margin-top: 15px;
+  }
+
+  app-stages-graph {
+    flex: 1;
+  }
 }
+
+

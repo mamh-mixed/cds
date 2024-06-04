@@ -15,11 +15,10 @@ import (
 var _ Lintable = V2WorkflowTemplate{}
 
 type V2WorkflowTemplate struct {
-	Name         string                     `json:"name"`
-	Description  string                     `json:"description,omitempty"`
-	Parameters   WorkflowTemplateParameters `json:"parameters"`
-	CommitStatus *CommitStatus              `json:"commit-status,omitempty"`
-	Spec         WorkflowSpec               `json:"spec"`
+	Name        string                     `json:"name"`
+	Description string                     `json:"description,omitempty"`
+	Parameters  WorkflowTemplateParameters `json:"parameters"`
+	Spec        WorkflowSpec               `json:"spec"`
 }
 
 type V2WorkflowTemplateGenerateRequest struct {
@@ -28,8 +27,8 @@ type V2WorkflowTemplateGenerateRequest struct {
 }
 
 type V2WorkflowTemplateGenerateResponse struct {
-	Errors   []string   `json:"errors"`
-	Workflow V2Workflow `json:"workflow"`
+	Error    string `json:"error" cli:"error"`
+	Workflow string `json:"workflow" cli:"workflow"`
 }
 
 func (wt V2WorkflowTemplate) Lint() (errs []error) {
@@ -65,7 +64,7 @@ func (wt V2WorkflowTemplate) GetName() string {
 	return wt.Name
 }
 
-func (wt V2WorkflowTemplate) Resolve(ctx context.Context, w *V2Workflow) (err error) {
+func (wt V2WorkflowTemplate) Resolve(ctx context.Context, w *V2Workflow) (string, error) {
 	type innerWorkflow struct {
 		Stages       map[string]WorkflowStage `json:"stages,omitempty"`
 		Gates        map[string]V2JobGate     `json:"gates,omitempty"`
@@ -76,19 +75,19 @@ func (wt V2WorkflowTemplate) Resolve(ctx context.Context, w *V2Workflow) (err er
 	}
 
 	if wt.Spec.tpl == nil {
-		return errors.New("uninitiliazed workflow spec")
+		return "", errors.New("uninitiliazed workflow spec")
 	}
 
 	var buf bytes.Buffer
 	if err := wt.Spec.tpl.Execute(&buf, map[string]any{
 		"params": w.Parameters,
 	}); err != nil {
-		return err
+		return "", err
 	}
 
 	var in innerWorkflow
 	if err := yaml.Unmarshal(buf.Bytes(), &in); err != nil {
-		return err
+		return buf.String(), err
 	}
 
 	// fill workflow
@@ -111,7 +110,7 @@ func (wt V2WorkflowTemplate) Resolve(ctx context.Context, w *V2Workflow) (err er
 		w.VariableSets = in.VariableSets
 	}
 
-	return nil
+	return buf.String(), nil
 }
 
 type WorkflowSpec struct {
@@ -127,12 +126,12 @@ func (t *WorkflowSpec) UnmarshalJSON(data []byte) error {
 	t.raw = data
 	var strData string
 	if err := json.Unmarshal(data, &strData); err != nil {
-		return err
+		return WithStack(err)
 	}
 
 	tpl, err := template.New("workflow_template").Funcs(interpolate.InterpolateHelperFuncs).Delims("[[", "]]").Parse(strData)
 	if err != nil {
-		return err
+		return WithStack(err)
 	}
 
 	t.tpl = tpl

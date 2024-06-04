@@ -1,14 +1,16 @@
 import * as vscode from "vscode";
 import * as uri from "vscode-uri";
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { isCDSWorkflowFile, isCDSWorkflowTemplateFile } from "./cds/file_utils";
 import { Journal } from "./utils/journal";
 import { Messenger} from "vscode-messenger";
-import { GenerateWorkflow, WorkflowRefresh, WorkflowTemplate } from "./type";
+import { GenerateWorkflow, GenerateWorkflowDataResponse, WorkflowRefresh, WorkflowTemplate, WorkflowTemplateGenerated } from "./type";
 import { CDS } from "./cds";
 import { WorkflowGenerateRequest } from "./cds/models/WorkflowGenerated";
 
-const dirWeb = 'dist-web';
+const dirWeb = 'dist-web/workflow-preview';
 
 export type RefreshMsg = {
     content: any;
@@ -19,7 +21,7 @@ export const Refresh = {
     method: 'refresh'
 };
 
-export class CDSPreview extends vscode.Disposable {
+export class CDSWorkflowPreview extends vscode.Disposable {
     private static viewType = "cds.preview";
 
     private _panel?: vscode.WebviewPanel;
@@ -38,9 +40,21 @@ export class CDSPreview extends vscode.Disposable {
             Journal.logInfo('Calling CDS');
             if (this._resource?.path) {
                 let req: WorkflowGenerateRequest = {filePath: this._resource?.path, params: request.parameters};
-                const resp = CDS.generateWorkflowFromTemplate(req);
-                Journal.logInfo('Response:' + resp);
-                return undefined;
+                const resp = await CDS.generateWorkflowFromTemplate(req);
+                if (resp['workflow']) {
+                    // Create file with workflow data
+                    let filepath = process.env.TMPDIR + '/workflow-' + path.parse(this._resource?.path).base;
+                    let ws = fs.createWriteStream(filepath);
+                    ws.write(resp['workflow']);
+                    ws.close();
+
+                    vscode.workspace.openTextDocument(filepath).then(doc => {
+                        vscode.window.showTextDocument(doc);
+                    });
+                }
+                let r: GenerateWorkflowDataResponse = {workflow: resp.workflow, error: resp.error};
+                this.messenger.sendNotification(WorkflowTemplateGenerated, {type: 'webview', webviewType: CDSWorkflowPreview.viewType}, { 'workflow': r.workflow});
+                return r;
             }
         });
         
@@ -74,7 +88,7 @@ export class CDSPreview extends vscode.Disposable {
         // Create panel webview
         if (!this._panel) {
             this._panel = vscode.window.createWebviewPanel(
-                CDSPreview.viewType,
+                CDSWorkflowPreview.viewType,
                 "CDS Workflow Preview",
                 vscode.ViewColumn.Two,
                 {
@@ -82,6 +96,7 @@ export class CDSPreview extends vscode.Disposable {
                     localResourceRoots: [
                         vscode.Uri.joinPath(this._context.extensionUri, dirWeb),
                     ],
+                    retainContextWhenHidden: true,
                 }
             );
             this.messenger.registerWebviewPanel(this._panel);
@@ -118,9 +133,9 @@ export class CDSPreview extends vscode.Disposable {
         if (this._panel && this._resource && this._resourceType) {
             vscode.workspace.openTextDocument(this._resource).then(document => {
                 if (this._resourceType === 'workflow') {
-                    this.messenger.sendNotification(WorkflowRefresh, {type: 'webview', webviewType: CDSPreview.viewType}, { 'workflow': document.getText()});
+                    this.messenger.sendNotification(WorkflowRefresh, {type: 'webview', webviewType: CDSWorkflowPreview.viewType}, { 'workflow': document.getText()});
                 } else if (this._resourceType === 'workflow-template') {
-                    this.messenger.sendNotification(WorkflowTemplate, {type: 'webview', webviewType: CDSPreview.viewType}, { 'workflowTemplate': document.getText()});
+                    this.messenger.sendNotification(WorkflowTemplate, {type: 'webview', webviewType: CDSWorkflowPreview.viewType}, { 'workflowTemplate': document.getText()});
                 }
             });
         }

@@ -56,7 +56,7 @@ func templateGenerateWorkflowFunc(v cli.Values) (interface{}, error) {
 	}
 	params := make(map[string]string)
 	for _, p := range rawParams {
-		ps := strings.SplitN(p, "=", 1)
+		ps := strings.SplitN(p, "=", 2)
 		if len(ps) != 2 {
 			return nil, sdk.NewErrorFrom(sdk.ErrWrongRequest, "invalid param %s", p)
 		}
