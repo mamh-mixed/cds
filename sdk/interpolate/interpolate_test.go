@@ -86,6 +86,17 @@ func TestDo(t *testing.T) {
 		enable  bool
 	}{
 		{
+			name: "concat",
+			args: args{
+				input: `{{ concat "[" .foo "]" }}`,
+				vars: map[string]string{
+					"foo": "bar",
+				},
+			},
+			want:   `[bar]`,
+			enable: true,
+		},
+		{
 			name: "default value with empty default",
 			args: args{
 				input: `aa:{{.cds.app.foo | default ""}}end`,

@@ -27,6 +27,7 @@ func init() {
 	InterpolateHelperFuncs = wrapHelpers(template.FuncMap{
 		"abbrev":     abbrev,
 		"abbrevboth": abbrevboth,
+		"concat":     concat,
 		"trunc":      trunc,
 		"trim":       strings.TrimSpace,
 		"upper":      strings.ToUpper,
@@ -276,6 +277,14 @@ func randNumeric(count int) string {
 
 func untitle(str string) string {
 	return util.Uncapitalize(str)
+}
+
+func concat(str ...string) string {
+	out := make([]string, len(str))
+	for i, a := range str {
+		out[i] = a
+	}
+	return strings.Join(out, "")
 }
 
 func quote(str ...interface{}) string {
