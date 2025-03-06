@@ -89,8 +89,10 @@ export class InputFilterComponent<T> implements AfterViewInit, AfterViewChecked,
 		};
 
 		const doBackfill = (this.filterInputDirective as any).doBackfill.bind(this.filterInputDirective);
+		const setTriggerValue = (this.filterInputDirective as any).setTriggerValue.bind(this.filterInputDirective);
 		(this.filterInputDirective as any).doBackfill = (): void => {
 			if (this.filterInputDirective.nzAutocomplete.activeItem.getLabel().indexOf('jump:') === 0) {
+				setTriggerValue(this.filterText);
 				return;
 			}
 			doBackfill();

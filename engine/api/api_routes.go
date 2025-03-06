@@ -147,7 +147,6 @@ func (api *API) InitRouter() {
 
 	r.Handle("/help", ScopeNone(), r.GET(api.getHelpHandler, service.OverrideAuth(service.NoAuthMiddleware)))
 
-	r.Handle("/ui/navbar", Scope(sdk.AuthConsumerScopeUser), r.GET(api.getNavbarHandler))
 	r.Handle("/ui/project/{permProjectKey}/application/{applicationName}/overview", Scope(sdk.AuthConsumerScopeProject), r.GET(api.getApplicationOverviewHandler))
 
 	// Import As Code

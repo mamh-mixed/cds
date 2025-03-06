@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
-import { NavbarSearchItem } from "app/model/navbar.model";
 import { SearchResult, SearchResultType } from "app/model/search.model";
 import { SearchService } from "app/service/search.service";
 import { AutoUnsubscribe } from "app/shared/decorator/autoUnsubscribe";
@@ -18,7 +17,7 @@ import { lastValueFrom } from "rxjs";
 })
 @AutoUnsubscribe()
 export class SearchBarComponent implements OnInit, OnDestroy {
-	@ViewChild('searchBar') searchBar: InputFilterComponent<NavbarSearchItem>;
+	@ViewChild('searchBar') searchBar: InputFilterComponent<Suggestion<SearchResult>>;
 
 	searchFilterText: string = '';
 	searchFilters: Array<Filter> = [];
@@ -107,8 +106,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 		});
 
 		this._router.navigate(['/search'], {
-			queryParams: { ...mFilters },
-			replaceUrl: true
+			queryParams: { ...mFilters }
 		});
 	}
 

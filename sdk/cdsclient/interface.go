@@ -264,7 +264,7 @@ type ProjectClientV2 interface {
 	ProjectVariableSetItemFromApplicationIntegrationVariable(ctx context.Context, pKey string, req sdk.CopyApplicationIntegrationVariableToVariableSet, mods ...RequestModifier) error
 
 	ProjectConcurrencyCreate(ctx context.Context, pKey string, c *sdk.ProjectConcurrency) error
-	ProjectConcurrencyGet(ctx context.Context, pKey string, name string)(*sdk.ProjectConcurrency, error)
+	ProjectConcurrencyGet(ctx context.Context, pKey string, name string) (*sdk.ProjectConcurrency, error)
 	ProjectConcurrencyList(ctx context.Context, pKey string) ([]sdk.ProjectConcurrency, error)
 	ProjectConcurrencyUpdate(ctx context.Context, pKey string, c *sdk.ProjectConcurrency) error
 	ProjectConcurrencyDelete(ctx context.Context, pKey string, name string) error
@@ -551,7 +551,6 @@ type Interface interface {
 	OrganizationClient
 	RegionClient
 	QueueClient
-	Navbar() ([]sdk.NavbarProjectData, error)
 	Requirements() ([]sdk.Requirement, error)
 	RepositoriesManagerInterface
 	ServiceClient

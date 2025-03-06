@@ -8671,21 +8671,6 @@ func (mr *MockInterfaceMockRecorder) MonVersion() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MonVersion", reflect.TypeOf((*MockInterface)(nil).MonVersion))
 }
 
-// Navbar mocks base method.
-func (m *MockInterface) Navbar() ([]sdk.NavbarProjectData, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Navbar")
-	ret0, _ := ret[0].([]sdk.NavbarProjectData)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Navbar indicates an expected call of Navbar.
-func (mr *MockInterfaceMockRecorder) Navbar() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Navbar", reflect.TypeOf((*MockInterface)(nil).Navbar))
-}
-
 // OrganizationAdd mocks base method.
 func (m *MockInterface) OrganizationAdd(ctx context.Context, organization sdk.Organization) error {
 	m.ctrl.T.Helper()

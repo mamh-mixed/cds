@@ -5,7 +5,6 @@ import { NgxsModule, Store } from '@ngxs/store';
 import { AuditWorkflow } from 'app/model/audit.model';
 import { Label, Project } from 'app/model/project.model';
 import { WNode, Workflow } from 'app/model/workflow.model';
-import { NavbarService } from 'app/service/navbar/navbar.service';
 import { ProjectService } from 'app/service/project/project.service';
 import { ProjectStore } from 'app/service/project/project.store';
 import { WorkflowRunService } from 'app/service/workflow/run/workflow.run.service';
@@ -30,7 +29,6 @@ describe('Workflows', () => {
         TestBed.configureTestingModule({
             providers: [
                 RouterService,
-                NavbarService,
                 WorkflowService,
                 WorkflowRunService,
                 ProjectStore,

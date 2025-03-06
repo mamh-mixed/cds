@@ -5,7 +5,6 @@ import { Action, createSelector, Selector, State, StateContext } from '@ngxs/sto
 import { RunToKeep } from 'app/model/purge.model';
 import { WNode, WNodeHook, WNodeTrigger, Workflow } from 'app/model/workflow.model';
 import { WorkflowNodeJobRun, WorkflowNodeRun, WorkflowRun, WorkflowRunSummary } from 'app/model/workflow.run.model';
-import { NavbarService } from 'app/service/navbar/navbar.service';
 import { RouterService } from 'app/service/router/router.service';
 import { WorkflowRunService } from 'app/service/workflow/run/workflow.run.service';
 import { WorkflowService } from 'app/service/workflow/workflow.service';
@@ -77,7 +76,6 @@ export class WorkflowState {
 
     constructor(
         private _http: HttpClient,
-        private _navbarService: NavbarService,
         private _routerService: RouterService,
         private _workflowService: WorkflowService,
         private _workflowRunService: WorkflowRunService,
@@ -1085,7 +1083,6 @@ export class WorkflowState {
             project_key: action.payload.projectKey,
             workflow_name: action.payload.workflowName,
         }).pipe(tap(() => {
-            this._navbarService.refreshData();
             if (state.workflow) {
                 ctx.setState({
                     ...state,

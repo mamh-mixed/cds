@@ -125,8 +125,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
 		this._router.navigate([], {
 			relativeTo: this._activatedRoute,
-			queryParams,
-			replaceUrl: true
+			queryParams
 		});
 	}
 

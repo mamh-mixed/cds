@@ -7,7 +7,7 @@ import {
 } from 'app/model/authentication.model';
 import { Bookmark } from 'app/model/bookmark.model';
 import { Group } from 'app/model/group.model';
-import {AuthentifiedUser, Schema, UserContact, UserGPGKey, UserLink} from 'app/model/user.model';
+import { AuthentifiedUser, Schema, UserContact, UserGPGKey, UserLink } from 'app/model/user.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -27,7 +27,6 @@ export class UserService {
 
     getLinks(username: string): Observable<Array<UserLink>> {
         return this._http.get<AuthentifiedUser>(`/user/${username}/link`).pipe(map(u => Object.assign([], u)));
-
     }
 
     update(username: string, user: AuthentifiedUser): Observable<AuthentifiedUser> {
@@ -77,8 +76,8 @@ export class UserService {
         return this._http.delete(`/user/${username}/auth/session/${sessionID}`);
     }
 
-    getBookmarks(): Observable<Bookmark[]> {
-        return this._http.get<Bookmark[]>('/bookmarks');
+    getBookmarks(): Observable<Array<Bookmark>> {
+        return this._http.get<Array<Bookmark>>('/bookmarks');
     }
 
     getSchema(filter: string): Observable<Schema> {
@@ -86,7 +85,7 @@ export class UserService {
         if (filter) {
             p = p.append('filter', filter);
         }
-        return this._http.get<Schema>('/user/schema', {params: p});
+        return this._http.get<Schema>('/user/schema', { params: p });
     }
 
     getGPGKeys(username: string): Observable<Array<UserGPGKey>> {

@@ -63,7 +63,6 @@ export class ProjectShowComponent implements OnInit, OnDestroy, AfterViewInit {
                     });
                 }
                 this.project = proj;
-                this._projectStore.updateRecentProject(this.project);
                 this.initTabs();
 
                 if (!!this.project.organization) {
